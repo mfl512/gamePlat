@@ -53,15 +53,15 @@
                 <div class="content-bottom">
                     <div class="game-list">
                         <div class="game-item" v-for="item in gameList"
-                             v-on:mouseover="mouseroverFunc(item,this)" v-on:mouseout="item.isVisible = false">
-                            <div v-if="!item.isVisible">
-                                <img src='../images/HDlogo.png'
+                             v-on:mouseover="mouseroverFunc(item)" v-on:mouseout="mouseroutFunc(item)">
+                            <div v-if="item.isVisible">
+                                <img :src='item.productIcon'
                                      style="width:80px;height:80px; border-radius: 100px;"/><br/>
-                                <span class="content-bottom-text">{{item.name}}</span><br/>
+                                <span class="content-bottom-text">{{item.productName}}</span><br/>
                                 <span class="content-bottom-text">{{item.productContact}}{{item.productContactPhone}}</span>
                             </div>
                             <div v-else class="QR-item">
-                                <img src='../images/HDlogo.png' style="width:120px;height:120px;">
+                                <img :src="item.productCodeImg" style="width:120px;height:120px;">
                             </div>
                         </div>
                     </div>
@@ -78,31 +78,31 @@
     export default {
         name: 'index',
 
-        mounted() {
+        created() {
             this.loadConfigData();
         },
         data() {
             return {
                 isLogin: false,
-                gameList: [{
-                    url: '',
-                    name: '挑战荒岛',
-                    productContact: '王先生',
-                    productContactPhone: '15084744220',
-                    isVisible: false
-                }
-                ],
+                gameList: [],
                 defaultGameList: []
             };
         },
-        method: {
-            mouseroverFunc(item, data) {
-                console.log(item, data)
+        methods: {
+            mouseroverFunc(item) {
+                item.isVisible = true;
+                console.log(item.isVisible)
+            },
+            mouseroutFunc(item){
+                item.isVisible = false;
+                console.log(item.isVisible)
             },
             loadConfigData() {
-                util.postJsonData('/home/show', function (data) {
+                util.postJsonData('/home/show', {}, this, function (data) {
                     console.log(data);
-                })
+                    this.gameList = data.products;
+                    this.defaultGameList = data.products;
+                }.bind(this));
             },
         },
         // mounted(){
@@ -199,6 +199,7 @@
     .game-item {
         flex: 1;
         min-width: 214px;
+        max-width: 214px;
         height: 180px;
         text-align: center;
         font-family: "Microsoft YaHei";
