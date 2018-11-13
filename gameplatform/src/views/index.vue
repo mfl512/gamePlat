@@ -52,23 +52,25 @@
                 </div>
                 <div class="content-bottom">
                     <div class="game-list">
-                        <div class="game-item" v-for="item in gameList"
-                             v-on:mouseover="mouseroverFunc(item)" v-on:mouseout="mouseroutFunc(item)">
-                            <div v-if="item.isVisible">
-                                <img :src='item.productIcon'
-                                     style="width:80px;height:80px; border-radius: 100px;"/><br/>
-                                <span class="content-bottom-text">{{item.productName}}</span><br/>
-                                <span class="content-bottom-text">{{item.productContact}}{{item.productContactPhone}}</span>
-                            </div>
-                            <div v-else class="QR-item">
-                                <img :src="item.productCodeImg" style="width:120px;height:120px;">
-                            </div>
+                        <div class="game-item" v-for="item in gameList">
+                            <img :src='item.productIcon'
+                                 style="width:80px;height:80px; border-radius: 100px;"
+                                 v-on:mouseover="mouseroverFunc(item)"/><br/>
+                            <span class="content-bottom-text">{{item.productName}}</span><br/>
+                            <span class="content-bottom-text">{{item.productContact}}{{item.productContactPhone}}</span>
                         </div>
                     </div>
 
                 </div>
             </Content>
             <Footer>Footer</Footer>
+            <Modal
+                    title="Title"
+                    v-model="isVisible"
+                    class-name="vertical-center-modal">
+                <img :src="productCodeImg"/>
+                <p>{{description}}</p>
+            </Modal>
         </Layout>
     </div>
 </template>
@@ -85,17 +87,16 @@
             return {
                 isLogin: false,
                 gameList: [],
-                defaultGameList: []
+                defaultGameList: [],
+                isVisible: false,
+                productCodeImg: '',
+                description: ''
             };
         },
         methods: {
             mouseroverFunc(item) {
-                item.isVisible = true;
-                console.log(item.isVisible)
-            },
-            mouseroutFunc(item){
-                item.isVisible = false;
-                console.log(item.isVisible)
+                this.isVisible = true;
+                this.productCodeImg = item.productCodeImg;
             },
             loadConfigData() {
                 util.postJsonData('/home/show', {}, this, function (data) {
@@ -112,6 +113,16 @@
     }
 </script>
 <style scoped>
+    .vertical-center-modal {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+    .ivu-modal {
+        top: 0;
+    }
+
+    }
     .layout .ivu-layout {
         height: 100%;
         width: 100%;
